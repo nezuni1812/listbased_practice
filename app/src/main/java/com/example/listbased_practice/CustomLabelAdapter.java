@@ -25,10 +25,10 @@ class CustomIconLabelAdapter extends ArrayAdapter<String> {
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = ((Activity) context).getLayoutInflater();
         View row = inflater.inflate(R.layout.custom_row_icon_label, null);
-        TextView label = (TextView) row.findViewById(R.id.label);
+//        TextView label = (TextView) row.findViewById(R.id.label);
         TextView phone = (TextView) row.findViewById(R.id.phone);
         ImageView icon = (ImageView) row.findViewById(R.id.icon);
-        label.setText(items[position]);
+//        label.setText(items[position]);
         phone.setText(phones[position]);
         icon.setImageResource(thumbnails[position]);
         return (row);
