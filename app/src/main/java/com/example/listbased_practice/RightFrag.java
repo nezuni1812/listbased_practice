@@ -1,7 +1,9 @@
 package com.example.listbased_practice;
 
+import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -11,6 +13,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link RightFrag#newInstance} factory method to
@@ -18,12 +23,9 @@ import android.widget.Toast;
  */
 public class RightFrag extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
@@ -31,57 +33,13 @@ public class RightFrag extends Fragment {
         // Required empty public constructor
     }
 
-    String[] items = {
-            "Phan Văn An",
-            "Nguyễn Thị Bình",
-            "Trần Văn Cường",
-            "Lê Thị Dung",
-            "Đặng Văn Em",
-            "Hoàng Thị Pha",
-            "Võ Văn Giàu",
-            "Bùi Thị Hợp",
-            "Đỗ Văn In",
-            "Ngô Thị Giêng",
-            "Phạm Văn Khương",
-            "Huỳnh Thị Loan",
-            "Dương Văn Mai",
-            "Lý Thị Nhàn",
-            "Tô Văn Oanh"
-    };
-    String[] sub_items = {
-            "A1_1", "A1_2", "A1_3", "A1_4", "A1_5",
-            "A2_1", "A2_2", "A2_3", "A2_4", "A2_5",
-            "A3_1", "A3_2", "A3_3", "A3_4", "A3_5"
-    };
-
-    String[] studentClass = {
-            "A1", "A1", "A1", "A1", "A1",
-            "A2", "A2", "A2", "A2", "A2",
-            "A3", "A3", "A3", "A3", "A3"
-    };
-
-    String[] studentGPA = {
-            "7.2", "7.4", "7.6", "7.8", "8.0",
-            "8.2", "8.4", "8.6", "8.8", "9.0",
-            "9.2", "9.4", "9.6", "9.8", "10.0"
-    };
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment RightFrag.
-     */
-    // TODO: Rename and change types and number of parameters
     Button first, prev, next, last;
 
-    public static RightFrag newInstance(String studentId, String param2) {
+    public static RightFrag newInstance() {
         RightFrag fragment = new RightFrag();
         Bundle args = new Bundle();
-        args.putString("studentId", studentId);
-        args.putString(ARG_PARAM2, param2);
+//        args.putString("studentId", studentId);
+//        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -119,28 +77,14 @@ public class RightFrag extends Fragment {
         first.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String id = String.valueOf(textViewId.getText());
-                updateUI(sub_items[getPageFromStudentId(id)*5 ]);
+                doi("first");
             }
         });
 
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String id = String.valueOf(textViewId.getText());
-                int index = getIndexFromStudentId(id); // Lấy vị trí hiện tại của sinh viên
-
-                if (index == -1) return; // Nếu không tìm thấy, không làm gì cả
-
-                int page = getPageFromStudentId(id); // Xác định trang hiện tại
-                int pageStart = page * 5; // Vị trí bắt đầu của trang
-                int pageEnd = pageStart + 4; // Vị trí kết thúc của trang (chỉ số tối đa)
-
-                if (index < pageEnd && index < sub_items.length - 1) { // Nếu chưa đến cuối trang
-                    updateUI(sub_items[index + 1]); // Hiển thị sinh viên tiếp theo trong trang
-                } else {
-                    Toast.makeText(requireContext(), "Đã hết danh sách trên trang!", Toast.LENGTH_SHORT).show();
-                }
+                doi("next");
             }
         });
 
@@ -148,100 +92,72 @@ public class RightFrag extends Fragment {
         prev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String id = String.valueOf(textViewId.getText());
-                int index = getIndexFromStudentId(id); // Lấy vị trí hiện tại của sinh viên
-
-                if (index == -1) return; // Nếu không tìm thấy, không làm gì cả
-
-                int page = getPageFromStudentId(id); // Xác định trang hiện tại
-                int pageStart = page * 5; // Vị trí bắt đầu của trang
-
-                if (index > pageStart) { // Nếu chưa đến đầu trang
-                    updateUI(sub_items[index - 1]); // Hiển thị sinh viên trước đó trong trang
-                } else {
-                    Toast.makeText(requireContext(), "Đang ở đầu danh sách trang này!", Toast.LENGTH_SHORT).show();
-                }
+                doi("prev");
             }
         });
 
         last.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String id = String.valueOf(textViewId.getText());
-                int index = getIndexFromStudentId(id); // Lấy vị trí hiện tại của sinh viên
-
-                if (index == -1) return; // Nếu không tìm thấy, không làm gì cả
-
-                int page = getPageFromStudentId(id); // Xác định trang hiện tại
-                int pageEnd = Math.min((page + 1) * 5 - 1, sub_items.length - 1); // Vị trí cuối trang
-
-                if (index < pageEnd) { // Nếu chưa đến cuối trang
-                    updateUI(sub_items[pageEnd]); // Hiển thị sinh viên cuối cùng của trang
-                } else {
-                    Toast.makeText(requireContext(), "Đang ở cuối danh sách trang này!", Toast.LENGTH_SHORT).show();
-                }
+                doi("last");
             }
         });
 
 
         Bundle arguments = getArguments();
-        if (arguments != null) {
-            String studentId = arguments.getString("studentId", "");
-            updateUI(studentId);
-        }
+//        if (arguments != null) {
+//            String studentId = arguments.getString("studentId", "");
+//            updateUI(studentId);
+//        }
 
         return view;
     }
 
-    private int getIndexFromStudentId(String studentId) {
-        for (int i = 0; i < sub_items.length; i++) {
-            if (sub_items[i].equals(studentId)) {
-                return i;
-            }
+    public void onMsgFromMainToFragment(Dictionary<String, String> value) {
+        int index = Integer.parseInt(value.get("index"));
+        String id = value.get("id");
+        String name = value.get("name");
+        String studentClass = value.get("class");
+        String gpa = value.get("gpa");
+        boolean isLast = Boolean.parseBoolean(value.get("isLast"));
+
+        first.setEnabled(true);
+        next.setEnabled(true);
+        prev.setEnabled(true);
+        last.setEnabled(true);
+
+        first.setAlpha(1);
+        next.setAlpha(1);
+        prev.setAlpha(1);
+        last.setAlpha(1);
+
+        if (isLast){
+            next.setAlpha(0.5f);
+            next.setEnabled(false);
+
+            last.setAlpha(0.5f);
+            last.setEnabled(false);
         }
-        return -1; // Không tìm thấy
-    }
 
-    public void onMsgFromMainToFragment(String s, String strValue) {
-        int index = Integer.parseInt(strValue);
+        if (index == 0){
+            prev.setAlpha(0.5f);
+            prev.setEnabled(false);
 
-        updateUI(sub_items[index]);
-        Toast.makeText(requireContext(), sub_items[index], Toast.LENGTH_SHORT);
+            first.setAlpha(0.5f);
+            first.setEnabled(false);
+        }
+
+        updateUI(id, name, studentClass, gpa);
     }
 
     TextView textViewId, textViewName, textViewClass, textViewGPA;
 
-    private int getPageFromStudentId(String studentId) {
-        int index = -1;
-        for (int i = 0; i < sub_items.length; i++) {
-            if (sub_items[i].equals(studentId)) {
-                index = i;
-                break;
-            }
-        }
-
-        if (index == -1) {
-            return -1; // Không tìm thấy
-        }
-
-        return index / 5; // Mỗi trang có 5 sinh viên
-    }
-
-
-    private void updateUI(String studentId) {
-        int index = -1;
-        for (int i = 0; i < sub_items.length; i++) {
-            if (sub_items[i].equals(studentId)) {
-                index = i;
-                break;
-            }
-        }
-
-        if (index != -1) {
-            textViewId.setText(sub_items[index]);
-            textViewName.setText(items[index]);
-            textViewClass.setText(studentClass[index]);
-            textViewGPA.setText(studentGPA[index]);
+    private void updateUI(String studentId, String studenttName, String studenttClass, String studenttGPA) {
+        if (studentId != null) {
+            textViewId.setText(studentId);
+            textViewName.setText(studenttName);
+            textViewClass.setText(studenttClass);
+            textViewGPA.setText(studenttGPA);
         } else {
             textViewId.setText("Không tìm thấy");
             textViewName.setText("-");
@@ -252,7 +168,19 @@ public class RightFrag extends Fragment {
 
     MainActivity main;
 
-    private void doi() {
-        main.onMsgFromFragToMain("RIGHT", textViewId.getText().toString());
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        if (context instanceof MainActivity) {
+            main = (MainActivity) context;
+        }
+    }
+
+    private void doi(String commandValue) {
+        Dictionary<String, String> valueToLeft = new Hashtable<>();
+        valueToLeft.put("command", commandValue);
+
+        main.onMsgFromFragToMain("RIGHT", valueToLeft);
     }
 }

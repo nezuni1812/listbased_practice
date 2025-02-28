@@ -12,14 +12,6 @@
         android:id="@+id/layout_red"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textView1Red"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Red Layout..."
-            android:background="#ffff0000"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-
 
         <TextView
             android:id="@+id/textViewId"
