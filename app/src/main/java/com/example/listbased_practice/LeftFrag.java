@@ -12,11 +12,12 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.Arrays;
+import java.util.Dictionary;
+import java.util.Hashtable;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -71,30 +72,18 @@ public class LeftFrag extends Fragment implements FragmentCallbacks {
             R.drawable.small_boy, R.drawable.small_boy, R.drawable.small_boy,
             R.drawable.small_boy, R.drawable.small_boy, R.drawable.small_boy
     };
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment LeftFrag.
-     */
-    // TODO: Rename and change types and number of parameters
     MainActivity main;
     Context context = null;
-    String message = "";
     int page = 0;
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    int current = 0;
     public LeftFrag() {
         // Required empty public constructor
     }
     private Button btn1, btn2, btn3;
-    public static LeftFrag newInstance(String strArg) {
+    public static LeftFrag newInstance() {
         LeftFrag fragment = new LeftFrag();
         Bundle args = new Bundle();
-        args.putString("strArg1", strArg);
+//        args.putString("strArg1", strArg);
         fragment.setArguments(args);
         return fragment;
     }
@@ -103,7 +92,6 @@ public class LeftFrag extends Fragment implements FragmentCallbacks {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Set default page and update UI
         page = 0;
         btn1.setAlpha(0.5f);
 
@@ -120,10 +108,9 @@ public class LeftFrag extends Fragment implements FragmentCallbacks {
         } catch (IllegalStateException e) {
             throw new IllegalStateException("MainActivity must implement callbacks");
         }
-
-
     }
 
+    TextView txtMsg;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -166,7 +153,7 @@ public class LeftFrag extends Fragment implements FragmentCallbacks {
             }
         });
 
-        final TextView txtMsg = (TextView) layout_blue.findViewById(R.id.txtMsg);
+        txtMsg = (TextView) layout_blue.findViewById(R.id.txtMsg);
 
         ListView listView = (ListView) layout_blue.findViewById(R.id.left_list);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,
@@ -178,9 +165,8 @@ public class LeftFrag extends Fragment implements FragmentCallbacks {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-// inform enclosing MainActivity of the row’s position just selected
-                main.onMsgFromFragToMain("LEFT", String.valueOf(position + 5 *page));
-                txtMsg.setText("Mã số: " + sub_items[position + 5 * page]);
+                current = position;
+                updateInfo(position);
             }
         });
 
@@ -188,14 +174,18 @@ public class LeftFrag extends Fragment implements FragmentCallbacks {
         return layout_blue;
     }
 
-//    public void showList(int start, int end){
-//        String[] myItems = Arrays.copyOfRange(items, start, end);
-//        Integer[] myThumbnails = Arrays.copyOfRange(thumbnails, start, end);
-//
-//        CustomIconLabelAdapter adapter = new CustomIconLabelAdapter(requireContext(), R.layout.custom_row_icon_label, myItems, myThumbnails, sub_items);
-//        setListAdapter(adapter);
-//    }
+    private void updateInfo(int position) {
+        Dictionary<String, String> valueToRight = new Hashtable<>();
+        valueToRight.put("index", String.valueOf(position));
+        valueToRight.put("id", sub_items[position + 5 * page]);
+        valueToRight.put("name", items[position + 5 * page]);
+        valueToRight.put("class", studentClass[position + 5 * page]);
+        valueToRight.put("gpa", studentGPA[position + 5 * page]);
+        valueToRight.put("isLast", String.valueOf(position == 4));
 
+        main.onMsgFromFragToMain("LEFT", valueToRight);
+        txtMsg.setText("Mã số: " + sub_items[position + 5 * page]);
+    }
     public void showList(int start, int end) {
         String[] myItems = Arrays.copyOfRange(items, start, end);
         String[] mySubItems = Arrays.copyOfRange(sub_items, start, end);
@@ -209,7 +199,33 @@ public class LeftFrag extends Fragment implements FragmentCallbacks {
     }
 
 
-    public void onMsgFromMainToFragment(String s) {
+    @Override
+    public void onMsgFromMainToFragment(Dictionary<String, String> value) {
+        ListView listView = requireView().findViewById(R.id.left_list);
+        CustomIconLabelAdapter adapter = (CustomIconLabelAdapter) listView.getAdapter();
 
+        String command = value.get("command");
+        switch (command) {
+            case "next":
+                if (current < 5 - 1){
+                    current++;
+                    updateInfo(current);
+                }
+                break;
+            case "last":
+                current = 4;
+                updateInfo(current);
+                break;
+            case "prev":
+                if (current > 0){
+                    current--;
+                    updateInfo(current);
+                }
+                break;
+            case "first":
+                current = 0;
+                updateInfo(current);
+                break;
+        }
     }
 }

@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#ff0000ff"
-            android:text="Your selection is ..."
+            android:text="Mã số: chưa chọn"
             android:textColor="#ffffffff"
             android:textSize="24sp"
             android:textStyle="bold" />
