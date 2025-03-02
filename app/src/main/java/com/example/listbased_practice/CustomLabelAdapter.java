@@ -15,7 +15,7 @@ class CustomIconLabelAdapter extends ArrayAdapter<String> {
     Integer[] thumbnails;
     String[] items;
     String[] phones;
-    private String selectedStudentId;
+    private int selectedPosition = -1;
 
     public CustomIconLabelAdapter( Context context, int layoutToBeInflated, String[] items, Integer[] thumbnails, String[] phones) {
         super(context, R.layout.custom_row_icon_label, items);
@@ -27,26 +27,38 @@ class CustomIconLabelAdapter extends ArrayAdapter<String> {
     }
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-        View row = inflater.inflate(R.layout.custom_row_icon_label, null);
-//        TextView label = (TextView) row.findViewById(R.id.label);
-        TextView phone = (TextView) row.findViewById(R.id.phone);
-        ImageView icon = (ImageView) row.findViewById(R.id.icon);
-//        label.setText(items[position]);
-        phone.setText(phones[position]);
-        icon.setImageResource(thumbnails[position]);
-        return (row);
+        ViewHolder holder;
+
+        if (convertView == null) {
+            LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+            convertView = inflater.inflate(R.layout.custom_row_icon_label, parent, false);
+            holder = new ViewHolder();
+            holder.phone = convertView.findViewById(R.id.phone);
+            holder.icon = convertView.findViewById(R.id.icon);
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
+
+        holder.phone.setText(phones[position]);
+        holder.icon.setImageResource(thumbnails[position]);
+
+        if (position == selectedPosition) {
+            convertView.setBackgroundColor(Color.parseColor("#0096FF"));
+        } else {
+            convertView.setBackgroundColor(Color.TRANSPARENT);
+        }
+
+        return convertView;
     }
 
-    public void setSelectedStudentId(String studentId) {
-        this.selectedStudentId = studentId;
-        notifyDataSetChanged(); // Cập nhật UI ngay sau khi thay đổi ID
+    static class ViewHolder {
+        TextView phone;
+        ImageView icon;
     }
-    private void updateBackground(View rowView, String studentId) {
-        if (studentId.equals(selectedStudentId)) {
-            rowView.setBackgroundColor(Color.LTGRAY); // Màu xám nhạt khi được chọn
-        } else {
-            rowView.setBackgroundColor(Color.TRANSPARENT); // Màu bình thường
-        }
+
+    public void setSelectedPosition(int position) {
+        selectedPosition = position;
+        notifyDataSetChanged();
     }
-} // CustomAdapter
+}

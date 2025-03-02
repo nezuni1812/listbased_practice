@@ -25,7 +25,7 @@
         <ListView
             android:id="@+id/left_list"
             android:layout_width="match_parent"
-            android:layout_height="615dp"
+            android:layout_height="wrap_content"
             android:divider="@drawable/custom_divider"
             android:dividerHeight="2dp" />
 

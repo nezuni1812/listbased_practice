@@ -128,7 +128,7 @@ public class LeftFrag extends Fragment implements FragmentCallbacks {
                 page  = 0;
                 btn3.setAlpha(1.0f);
                 btn2.setAlpha(1.0f);
-                btn1.setAlpha(0.5f);
+                btn1.setAlpha(0.3f);
                 showList(0, 5);
             }
         });
@@ -138,7 +138,7 @@ public class LeftFrag extends Fragment implements FragmentCallbacks {
                 page  = 1;
                 btn3.setAlpha(1.0f);
                 btn1.setAlpha(1.0f);
-                btn2.setAlpha(0.5f);
+                btn2.setAlpha(0.3f);
                 showList(5, 10);
             }
         });
@@ -148,7 +148,7 @@ public class LeftFrag extends Fragment implements FragmentCallbacks {
                 page  = 2;
                 btn1.setAlpha(1.0f);
                 btn2.setAlpha(1.0f);
-                btn3.setAlpha(0.5f);
+                btn3.setAlpha(0.3f);
                 showList(10, 15);
             }
         });
@@ -166,6 +166,8 @@ public class LeftFrag extends Fragment implements FragmentCallbacks {
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 current = position;
+                CustomIconLabelAdapter adapter = (CustomIconLabelAdapter) listView.getAdapter();
+                adapter.setSelectedPosition(position);
                 updateInfo(position);
             }
         });
@@ -198,16 +200,17 @@ public class LeftFrag extends Fragment implements FragmentCallbacks {
         listView.setAdapter(adapter);
     }
 
-
     @Override
     public void onMsgFromMainToFragment(Dictionary<String, String> value) {
         ListView listView = requireView().findViewById(R.id.left_list);
         CustomIconLabelAdapter adapter = (CustomIconLabelAdapter) listView.getAdapter();
 
+        if (adapter == null) return;
+
         String command = value.get("command");
         switch (command) {
             case "next":
-                if (current < 5 - 1){
+                if (current < 5 - 1) {
                     current++;
                     updateInfo(current);
                 }
@@ -217,7 +220,7 @@ public class LeftFrag extends Fragment implements FragmentCallbacks {
                 updateInfo(current);
                 break;
             case "prev":
-                if (current > 0){
+                if (current > 0) {
                     current--;
                     updateInfo(current);
                 }
@@ -227,5 +230,7 @@ public class LeftFrag extends Fragment implements FragmentCallbacks {
                 updateInfo(current);
                 break;
         }
+
+        adapter.setSelectedPosition(current);
     }
 }
